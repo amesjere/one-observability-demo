@@ -74,7 +74,6 @@ export class Services extends Stack {
 
         dynamodb_petadoption.metric('WriteThrottleEvents', { statistic: "avg" }).createAlarm(this, 'WriteThrottleEvents-BasicAlarm', {
             threshold: 0,
-            treatMissingData: TreatMissingData.NOT_BREACHING,
             comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
             evaluationPeriods: 1,
             alarmName: `${dynamodb_petadoption.tableName}-WriteThrottleEvents-BasicAlarm`,
@@ -82,7 +81,6 @@ export class Services extends Stack {
 
         dynamodb_petadoption.metric('ReadThrottleEvents', { statistic: "avg" }).createAlarm(this, 'ReadThrottleEvents-BasicAlarm', {
             threshold: 0,
-            treatMissingData: TreatMissingData.NOT_BREACHING,
             comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
             evaluationPeriods: 1,
             alarmName: `${dynamodb_petadoption.tableName}-ReadThrottleEvents-BasicAlarm`,
