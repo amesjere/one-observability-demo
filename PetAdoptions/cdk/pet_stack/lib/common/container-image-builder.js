@@ -1,0 +1,40 @@
+"use strict";
+/**
+ * Create a container image from Dockerfile and make it available
+ * on a dedicated ECR repository (by default, CDK places all of the
+ * container images in the same "CDK Assets" ECR repository)
+ *
+ * Behind the scenes, this is what happens:
+ * 1. The container image is built locally and pushed into the "CDK Assets" ECR repository
+ * 2. A dedicated ECR repository is created
+ * 3. The container image is copied from "CDK Assets" to the dedicated repository
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ContainerImageBuilder = void 0;
+const cdk = require("aws-cdk-lib");
+const ecr = require("aws-cdk-lib/aws-ecr");
+const ecrassets = require("aws-cdk-lib/aws-ecr-assets");
+const ecrdeploy = require("cdk-ecr-deployment");
+const constructs_1 = require("constructs");
+class ContainerImageBuilder extends constructs_1.Construct {
+    constructor(scope, id, props) {
+        super(scope, id);
+        const repository = new ecr.Repository(this, props.repositoryName + 'Repository', {
+            repositoryName: props.repositoryName,
+            imageScanOnPush: true,
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+            emptyOnDelete: true,
+        });
+        const image = new ecrassets.DockerImageAsset(this, props.repositoryName + 'DockerImageAsset', {
+            directory: props.dockerImageAssetDirectory
+        });
+        new ecrdeploy.ECRDeployment(this, props.repositoryName + 'DeployDockerImage', {
+            src: new ecrdeploy.DockerImageName(image.imageUri),
+            dest: new ecrdeploy.DockerImageName(repository.repositoryUri),
+        });
+        this.repositoryUri = repository.repositoryUri;
+        this.imageUri = `${repository.repositoryUri}:latest`;
+    }
+}
+exports.ContainerImageBuilder = ContainerImageBuilder;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY29udGFpbmVyLWltYWdlLWJ1aWxkZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJjb250YWluZXItaW1hZ2UtYnVpbGRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUE7Ozs7Ozs7OztHQVNHOzs7QUFFSCxtQ0FBbUM7QUFDbkMsMkNBQTJDO0FBQzNDLHdEQUF3RDtBQUN4RCxnREFBZ0Q7QUFFaEQsMkNBQXVDO0FBT3ZDLE1BQWEscUJBQXNCLFNBQVEsc0JBQVM7SUFJaEQsWUFBWSxLQUFnQixFQUFFLEVBQVUsRUFBRSxLQUFpQztRQUN2RSxLQUFLLENBQUMsS0FBSyxFQUFFLEVBQUUsQ0FBQyxDQUFDO1FBRWpCLE1BQU0sVUFBVSxHQUFHLElBQUksR0FBRyxDQUFDLFVBQVUsQ0FBQyxJQUFJLEVBQUUsS0FBSyxDQUFDLGNBQWMsR0FBRyxZQUFZLEVBQUU7WUFDN0UsY0FBYyxFQUFFLEtBQUssQ0FBQyxjQUFjO1lBQ3BDLGVBQWUsRUFBRSxJQUFJO1lBQ3JCLGFBQWEsRUFBRSxHQUFHLENBQUMsYUFBYSxDQUFDLE9BQU87WUFDeEMsYUFBYSxFQUFFLElBQUk7U0FDdEIsQ0FBQyxDQUFDO1FBQ0gsTUFBTSxLQUFLLEdBQUcsSUFBSSxTQUFTLENBQUMsZ0JBQWdCLENBQUMsSUFBSSxFQUFFLEtBQUssQ0FBQyxjQUFjLEdBQUcsa0JBQWtCLEVBQUU7WUFDNUYsU0FBUyxFQUFFLEtBQUssQ0FBQyx5QkFBeUI7U0FDM0MsQ0FBQyxDQUFDO1FBQ0gsSUFBSSxTQUFTLENBQUMsYUFBYSxDQUFDLElBQUksRUFBRSxLQUFLLENBQUMsY0FBYyxHQUFHLG1CQUFtQixFQUFFO1lBQzVFLEdBQUcsRUFBRSxJQUFJLFNBQVMsQ0FBQyxlQUFlLENBQUMsS0FBSyxDQUFDLFFBQVEsQ0FBQztZQUNsRCxJQUFJLEVBQUUsSUFBSSxTQUFTLENBQUMsZUFBZSxDQUFDLFVBQVUsQ0FBQyxhQUFhLENBQUM7U0FDOUQsQ0FBQyxDQUFDO1FBRUgsSUFBSSxDQUFDLGFBQWEsR0FBRyxVQUFVLENBQUMsYUFBYSxDQUFDO1FBQzlDLElBQUksQ0FBQyxRQUFRLEdBQUcsR0FBRyxVQUFVLENBQUMsYUFBYSxTQUFTLENBQUM7SUFDekQsQ0FBQztDQUNKO0FBeEJELHNEQXdCQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxyXG4gKiBDcmVhdGUgYSBjb250YWluZXIgaW1hZ2UgZnJvbSBEb2NrZXJmaWxlIGFuZCBtYWtlIGl0IGF2YWlsYWJsZVxyXG4gKiBvbiBhIGRlZGljYXRlZCBFQ1IgcmVwb3NpdG9yeSAoYnkgZGVmYXVsdCwgQ0RLIHBsYWNlcyBhbGwgb2YgdGhlXHJcbiAqIGNvbnRhaW5lciBpbWFnZXMgaW4gdGhlIHNhbWUgXCJDREsgQXNzZXRzXCIgRUNSIHJlcG9zaXRvcnkpXHJcbiAqXHJcbiAqIEJlaGluZCB0aGUgc2NlbmVzLCB0aGlzIGlzIHdoYXQgaGFwcGVuczpcclxuICogMS4gVGhlIGNvbnRhaW5lciBpbWFnZSBpcyBidWlsdCBsb2NhbGx5IGFuZCBwdXNoZWQgaW50byB0aGUgXCJDREsgQXNzZXRzXCIgRUNSIHJlcG9zaXRvcnlcclxuICogMi4gQSBkZWRpY2F0ZWQgRUNSIHJlcG9zaXRvcnkgaXMgY3JlYXRlZFxyXG4gKiAzLiBUaGUgY29udGFpbmVyIGltYWdlIGlzIGNvcGllZCBmcm9tIFwiQ0RLIEFzc2V0c1wiIHRvIHRoZSBkZWRpY2F0ZWQgcmVwb3NpdG9yeVxyXG4gKi9cclxuXHJcbmltcG9ydCAqIGFzIGNkayBmcm9tICdhd3MtY2RrLWxpYic7XHJcbmltcG9ydCAqIGFzIGVjciBmcm9tICdhd3MtY2RrLWxpYi9hd3MtZWNyJztcclxuaW1wb3J0ICogYXMgZWNyYXNzZXRzIGZyb20gJ2F3cy1jZGstbGliL2F3cy1lY3ItYXNzZXRzJztcclxuaW1wb3J0ICogYXMgZWNyZGVwbG95IGZyb20gJ2Nkay1lY3ItZGVwbG95bWVudCc7XHJcblxyXG5pbXBvcnQgeyBDb25zdHJ1Y3QgfSBmcm9tICdjb25zdHJ1Y3RzJztcclxuXHJcbmV4cG9ydCBpbnRlcmZhY2UgQ29udGFpbmVySW1hZ2VCdWlsZGVyUHJvcHMge1xyXG4gICAgcmVwb3NpdG9yeU5hbWU6IHN0cmluZyxcclxuICAgIGRvY2tlckltYWdlQXNzZXREaXJlY3Rvcnk6IHN0cmluZ1xyXG59XHJcblxyXG5leHBvcnQgY2xhc3MgQ29udGFpbmVySW1hZ2VCdWlsZGVyIGV4dGVuZHMgQ29uc3RydWN0IHtcclxuICAgIHB1YmxpYyByZXBvc2l0b3J5VXJpOiBzdHJpbmc7XHJcbiAgICBwdWJsaWMgaW1hZ2VVcmk6IHN0cmluZztcclxuXHJcbiAgICBjb25zdHJ1Y3RvcihzY29wZTogQ29uc3RydWN0LCBpZDogc3RyaW5nLCBwcm9wczogQ29udGFpbmVySW1hZ2VCdWlsZGVyUHJvcHMpIHtcclxuICAgICAgICBzdXBlcihzY29wZSwgaWQpO1xyXG5cclxuICAgICAgICBjb25zdCByZXBvc2l0b3J5ID0gbmV3IGVjci5SZXBvc2l0b3J5KHRoaXMsIHByb3BzLnJlcG9zaXRvcnlOYW1lICsgJ1JlcG9zaXRvcnknLCB7XHJcbiAgICAgICAgICAgIHJlcG9zaXRvcnlOYW1lOiBwcm9wcy5yZXBvc2l0b3J5TmFtZSxcclxuICAgICAgICAgICAgaW1hZ2VTY2FuT25QdXNoOiB0cnVlLFxyXG4gICAgICAgICAgICByZW1vdmFsUG9saWN5OiBjZGsuUmVtb3ZhbFBvbGljeS5ERVNUUk9ZLFxyXG4gICAgICAgICAgICBlbXB0eU9uRGVsZXRlOiB0cnVlLFxyXG4gICAgICAgIH0pO1xyXG4gICAgICAgIGNvbnN0IGltYWdlID0gbmV3IGVjcmFzc2V0cy5Eb2NrZXJJbWFnZUFzc2V0KHRoaXMsIHByb3BzLnJlcG9zaXRvcnlOYW1lICsgJ0RvY2tlckltYWdlQXNzZXQnLCB7XHJcbiAgICAgICAgICBkaXJlY3Rvcnk6IHByb3BzLmRvY2tlckltYWdlQXNzZXREaXJlY3RvcnlcclxuICAgICAgICB9KTtcclxuICAgICAgICBuZXcgZWNyZGVwbG95LkVDUkRlcGxveW1lbnQodGhpcywgcHJvcHMucmVwb3NpdG9yeU5hbWUgKyAnRGVwbG95RG9ja2VySW1hZ2UnLCB7XHJcbiAgICAgICAgICBzcmM6IG5ldyBlY3JkZXBsb3kuRG9ja2VySW1hZ2VOYW1lKGltYWdlLmltYWdlVXJpKSxcclxuICAgICAgICAgIGRlc3Q6IG5ldyBlY3JkZXBsb3kuRG9ja2VySW1hZ2VOYW1lKHJlcG9zaXRvcnkucmVwb3NpdG9yeVVyaSksXHJcbiAgICAgICAgfSk7XHJcblxyXG4gICAgICAgIHRoaXMucmVwb3NpdG9yeVVyaSA9IHJlcG9zaXRvcnkucmVwb3NpdG9yeVVyaTtcclxuICAgICAgICB0aGlzLmltYWdlVXJpID0gYCR7cmVwb3NpdG9yeS5yZXBvc2l0b3J5VXJpfTpsYXRlc3RgO1xyXG4gICAgfVxyXG59XHJcbiJdfQ==

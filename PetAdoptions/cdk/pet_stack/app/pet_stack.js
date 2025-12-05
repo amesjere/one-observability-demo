@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("source-map-support/register");
+const services_1 = require("../lib/services");
+const applications_1 = require("../lib/applications");
+//import { EKSPetsite } from '../lib/ekspetsite'
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+//import { AwsSolutionsChecks } from 'cdk-nag';
+const stackName = "Services";
+const app = new aws_cdk_lib_1.App();
+const stack = new services_1.Services(app, stackName, {
+    env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION
+    }
+});
+const applications = new applications_1.Applications(app, "Applications", {
+    env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION
+    }
+});
+aws_cdk_lib_1.Tags.of(app).add("Workshop", "true");
+//Aspects.of(stack).add(new AwsSolutionsChecks({verbose: true}));
+//Aspects.of(applications).add(new AwsSolutionsChecks({verbose: true}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGV0X3N0YWNrLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsicGV0X3N0YWNrLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUNBLHVDQUFxQztBQUNyQyw4Q0FBMkM7QUFDM0Msc0RBQW1EO0FBQ25ELGdEQUFnRDtBQUNoRCw2Q0FBaUQ7QUFDakQsK0NBQStDO0FBRy9DLE1BQU0sU0FBUyxHQUFHLFVBQVUsQ0FBQztBQUM3QixNQUFNLEdBQUcsR0FBRyxJQUFJLGlCQUFHLEVBQUUsQ0FBQztBQUV0QixNQUFNLEtBQUssR0FBRyxJQUFJLG1CQUFRLENBQUMsR0FBRyxFQUFFLFNBQVMsRUFBRTtJQUN6QyxHQUFHLEVBQUU7UUFDSCxPQUFPLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxtQkFBbUI7UUFDeEMsTUFBTSxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsa0JBQWtCO0tBQ3pDO0NBQUMsQ0FBQyxDQUFDO0FBRUosTUFBTSxZQUFZLEdBQUcsSUFBSSwyQkFBWSxDQUFDLEdBQUcsRUFBRSxjQUFjLEVBQUU7SUFDekQsR0FBRyxFQUFFO1FBQ0gsT0FBTyxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsbUJBQW1CO1FBQ3hDLE1BQU0sRUFBRSxPQUFPLENBQUMsR0FBRyxDQUFDLGtCQUFrQjtLQUN6QztDQUFDLENBQUMsQ0FBQztBQUVKLGtCQUFJLENBQUMsRUFBRSxDQUFDLEdBQUcsQ0FBQyxDQUFDLEdBQUcsQ0FBQyxVQUFVLEVBQUMsTUFBTSxDQUFDLENBQUE7QUFDbkMsaUVBQWlFO0FBQ2pFLHdFQUF3RSIsInNvdXJjZXNDb250ZW50IjpbIiMhL3Vzci9iaW4vZW52IG5vZGVcclxuaW1wb3J0ICdzb3VyY2UtbWFwLXN1cHBvcnQvcmVnaXN0ZXInO1xyXG5pbXBvcnQgeyBTZXJ2aWNlcyB9IGZyb20gJy4uL2xpYi9zZXJ2aWNlcyc7XHJcbmltcG9ydCB7IEFwcGxpY2F0aW9ucyB9IGZyb20gJy4uL2xpYi9hcHBsaWNhdGlvbnMnO1xyXG4vL2ltcG9ydCB7IEVLU1BldHNpdGUgfSBmcm9tICcuLi9saWIvZWtzcGV0c2l0ZSdcclxuaW1wb3J0IHsgQXBwLCBUYWdzLCBBc3BlY3RzIH0gZnJvbSAnYXdzLWNkay1saWInO1xyXG4vL2ltcG9ydCB7IEF3c1NvbHV0aW9uc0NoZWNrcyB9IGZyb20gJ2Nkay1uYWcnO1xyXG5cclxuXHJcbmNvbnN0IHN0YWNrTmFtZSA9IFwiU2VydmljZXNcIjtcclxuY29uc3QgYXBwID0gbmV3IEFwcCgpO1xyXG5cclxuY29uc3Qgc3RhY2sgPSBuZXcgU2VydmljZXMoYXBwLCBzdGFja05hbWUsIHsgXHJcbiAgZW52OiB7IFxyXG4gICAgYWNjb3VudDogcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfQUNDT1VOVCwgXHJcbiAgICByZWdpb246IHByb2Nlc3MuZW52LkNES19ERUZBVUxUX1JFR0lPTiBcclxufX0pO1xyXG5cclxuY29uc3QgYXBwbGljYXRpb25zID0gbmV3IEFwcGxpY2F0aW9ucyhhcHAsIFwiQXBwbGljYXRpb25zXCIsIHtcclxuICBlbnY6IHsgXHJcbiAgICBhY2NvdW50OiBwcm9jZXNzLmVudi5DREtfREVGQVVMVF9BQ0NPVU5ULCBcclxuICAgIHJlZ2lvbjogcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfUkVHSU9OIFxyXG59fSk7XHJcblxyXG5UYWdzLm9mKGFwcCkuYWRkKFwiV29ya3Nob3BcIixcInRydWVcIilcclxuLy9Bc3BlY3RzLm9mKHN0YWNrKS5hZGQobmV3IEF3c1NvbHV0aW9uc0NoZWNrcyh7dmVyYm9zZTogdHJ1ZX0pKTtcclxuLy9Bc3BlY3RzLm9mKGFwcGxpY2F0aW9ucykuYWRkKG5ldyBBd3NTb2x1dGlvbnNDaGVja3Moe3ZlcmJvc2U6IHRydWV9KSk7XHJcbiJdfQ==
