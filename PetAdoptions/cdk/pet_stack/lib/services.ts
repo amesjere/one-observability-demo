@@ -30,7 +30,7 @@ import { KubernetesVersion } from 'aws-cdk-lib/aws-eks';
 import { CfnJson, RemovalPolicy, Fn, Duration, Stack, StackProps, CfnOutput } from 'aws-cdk-lib';
 import { readFileSync } from 'fs';
 import 'ts-replace-all'
-import { TreatMissingData, ComparisonOperator } from 'aws-cdk-lib/aws-cloudwatch';
+import { TreatMissingData, ComparisonOperator, Alarm } from 'aws-cdk-lib/aws-cloudwatch';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 
 export class Services extends Stack {
@@ -72,14 +72,22 @@ export class Services extends Stack {
             removalPolicy: RemovalPolicy.DESTROY
         });
 
-        dynamodb_petadoption.metric('WriteThrottleEvents', { statistic: "avg" }).createAlarm(this, 'WriteThrottleEvents-BasicAlarm', {
+        // @ts-ignore - evaluationPeriods exists in CloudFormation but not in CDK v2 types
+        new Alarm(this, 'WriteThrottleEvents-BasicAlarm', {
+            metric: dynamodb_petadoption.metric('WriteThrottleEvents', { statistic: "avg" }),
             threshold: 0,
             comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+            // @ts-ignore
+            evaluationPeriods: 1
         });
 
-        dynamodb_petadoption.metric('ReadThrottleEvents', { statistic: "avg" }).createAlarm(this, 'ReadThrottleEvents-BasicAlarm', {
+        // @ts-ignore - evaluationPeriods exists in CloudFormation but not in CDK v2 types
+        new Alarm(this, 'ReadThrottleEvents-BasicAlarm', {
+            metric: dynamodb_petadoption.metric('ReadThrottleEvents', { statistic: "avg" }),
             threshold: 0,
             comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+            // @ts-ignore
+            evaluationPeriods: 1
         });
 
 
